@@ -1,0 +1,80 @@
+<svg width="340" height="100" viewBox="20 0 340 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient Definitions -->
+  <defs>
+    <!-- Main bag gradient -->
+    <linearGradient id="bagGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Handle gradient -->
+    <linearGradient id="handleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0EA5E9;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Text gradient -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E293B;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0F172A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E293B;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shopping Bag Icon with shadow -->
+  <g filter="url(#shadow)">
+    <!-- Main bag body -->
+    <rect x="20" y="28" width="50" height="52" rx="6" fill="url(#bagGradient)"/>
+    
+    <!-- Bag highlight for depth -->
+    <rect x="23" y="31" width="20" height="46" rx="3" fill="white" opacity="0.15"/>
+    
+    <!-- Handle / Strap -->
+    <path d="M30 28 C30 18 60 18 60 28" 
+          stroke="url(#handleGradient)" 
+          stroke-width="4" 
+          fill="none" 
+          stroke-linecap="round"/>
+    
+    <!-- Inner handle detail -->
+    <path d="M32 28 C32 21 58 21 58 28" 
+          stroke="white" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round"
+          opacity="0.4"/>
+    
+    <!-- Shopping bag fold line -->
+    <line x1="20" y1="38" x2="70" y2="38" stroke="white" stroke-width="1" opacity="0.2"/>
+    
+    <!-- Decorative dots on bag -->
+    <circle cx="45" cy="55" r="2" fill="white" opacity="0.25"/>
+    <circle cx="45" cy="65" r="2" fill="white" opacity="0.25"/>
+  </g>
+
+  <!-- Text NextStore -->
+  <text x="90" y="65" 
+        font-family="Poppins, Inter, -apple-system, sans-serif"
+        font-size="44" 
+        font-weight="700" 
+        fill="url(#textGradient)"
+        letter-spacing="-1">
+    NextStore
+  </text>
+  
+  <!-- Subtle underline accent -->
+  <rect x="90" y="72" width="60" height="3" rx="1.5" fill="url(#handleGradient)" opacity="0.6"/>
+</svg>
