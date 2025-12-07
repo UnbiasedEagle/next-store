@@ -19,7 +19,7 @@ export const Nav = async () => {
           {!user && (
             <li>
               <Button asChild>
-                <Link href='/api/auth/signin'>
+                <Link href='/auth/login'>
                   <LogIn size={16} />
                   <span>Sign In</span>
                 </Link>
