@@ -9,7 +9,7 @@ export const Socials = () => {
   return (
     <div className='flex flex-col items-center w-full gap-4'>
       <Button
-        variant={'outline'}
+        variant='outline'
         className='flex gap-4 w-full'
         onClick={() => signIn('google', { callbackUrl: '/' })}
       >
@@ -18,7 +18,7 @@ export const Socials = () => {
       </Button>
       <Button
         className='flex gap-4 w-full'
-        variant={'outline'}
+        variant='outline'
         onClick={() => signIn('github', { callbackUrl: '/' })}
       >
         Sign in with Github

@@ -14,7 +14,9 @@ export const Nav = async () => {
       <nav>
         <ul className='flex justify-between items-center'>
           <li>
-            <Logo />
+            <Link href='/'>
+              <Logo />
+            </Link>
           </li>
           {!user && (
             <li>
