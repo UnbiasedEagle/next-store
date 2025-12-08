@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html suppressHydrationWarning lang='en'>
       <body className={`${roboto.variable} font-sans antialiased`}>
         <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
           <Nav />
