@@ -15,6 +15,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { emailSignIn } from '@/server/actions/email-signin';
+import { useAction } from 'next-safe-action/hooks';
+import { cn } from '@/lib/utils';
 
 export const LoginForm = () => {
   const form = useForm({
@@ -24,10 +27,13 @@ export const LoginForm = () => {
       password: '',
     },
   });
+  const { execute, status, result } = useAction(emailSignIn);
 
   const onSubmit = async (data: LoginSchemaType) => {
-    console.log(data);
+    execute(data);
   };
+
+  console.log(result);
 
   return (
     <AuthCard
@@ -79,7 +85,14 @@ export const LoginForm = () => {
               <Link href='/auth/reset'>Forgot Password?</Link>
             </Button>
           </div>
-          <Button className='w-full' type='submit'>
+          <Button
+            disabled={status === 'executing'}
+            className={cn(
+              'w-full',
+              status === 'executing' ? 'animate-pulse' : ''
+            )}
+            type='submit'
+          >
             Login
           </Button>
         </form>
