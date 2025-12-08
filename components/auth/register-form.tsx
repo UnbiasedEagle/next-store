@@ -1,9 +1,7 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { RegisterSchema, RegisterSchemaType } from '@/lib/validations/auth';
 import { AuthCard } from './auth-card';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginSchema, LoginSchemaType } from '@/lib/validations/auth';
 import {
   Form,
   FormControl,
@@ -12,28 +10,32 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { emailSignIn } from '@/server/actions/auth';
-import { useAction } from 'next-safe-action/hooks';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { useAction } from 'next-safe-action/hooks';
+import { emailRegister } from '@/server/actions/auth';
 import { FormSuccess } from './form-success';
 import { FormError } from './form-error';
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const form = useForm({
-    resolver: zodResolver(LoginSchema),
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: '',
       password: '',
+      name: '',
     },
   });
-  const { execute, status } = useAction(emailSignIn, {
+
+  const { execute, status } = useAction(emailRegister, {
     onSuccess: ({ data }) => {
       if (data?.error) {
         setError(data.error);
@@ -44,20 +46,37 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = async (data: LoginSchemaType) => {
+  const onSubmit = async (data: RegisterSchemaType) => {
     execute(data);
   };
 
   return (
     <AuthCard
-      cardTitle='Welcome back!'
-      backButtonHref='/auth/register'
-      backButtonLabel="Don't have an account?"
+      cardTitle='Create an account 🎉'
+      backButtonHref='/auth/login'
+      backButtonLabel='Already have an account?'
       showSocials
     >
       <Form {...form}>
         <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
           <div className='space-y-4'>
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='Enter your name'
+                      {...field}
+                      type='text'
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='email'
@@ -107,7 +126,7 @@ export const LoginForm = () => {
             )}
             type='submit'
           >
-            Login
+            Register
           </Button>
         </form>
       </Form>
