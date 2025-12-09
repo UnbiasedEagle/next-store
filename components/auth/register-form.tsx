@@ -47,6 +47,8 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (data: RegisterSchemaType) => {
+    setError('');
+    setSuccess('');
     execute(data);
   };
 

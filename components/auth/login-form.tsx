@@ -33,6 +33,7 @@ export const LoginForm = () => {
       password: '',
     },
   });
+
   const { execute, status } = useAction(emailSignIn, {
     onSuccess: ({ data }) => {
       if (data?.error) {
@@ -45,6 +46,8 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginSchemaType) => {
+    setError('');
+    setSuccess('');
     execute(data);
   };
 
