@@ -22,6 +22,34 @@
       "when": 1765186432499,
       "tag": "0002_stale_carlie_cooper",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765202281345,
+      "tag": "0003_soft_daimon_hellstrom",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765281171653,
+      "tag": "0004_sharp_manta",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1765281542522,
+      "tag": "0005_heavy_otto_octavius",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1765282371760,
+      "tag": "0006_uneven_valkyrie",
+      "breakpoints": true
     }
   ]
 }

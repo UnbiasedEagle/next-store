@@ -9,7 +9,9 @@ import {
 import { createSafeActionClient } from 'next-safe-action';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
-import { users } from '@/server/db/schema';
+import { users, verificationTokens } from '@/server/db/schema';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const actionClient = createSafeActionClient();
 
@@ -46,13 +48,33 @@ export const emailRegister = actionClient
       });
 
       if (existingUser) {
+        if (!existingUser.emailVerified) {
+          const verificationToken = await generateVerificationToken(
+            existingUser.email
+          );
+          return {
+            success: 'Email confirmation sent',
+          };
+        }
         return {
           error: 'User already exists',
         };
       }
 
+      const hashedPassword = await bcrypt.hash(parsedInput.password, 10);
+
+      await db.insert(users).values({
+        email: parsedInput.email,
+        name: parsedInput.name,
+        password: hashedPassword,
+      });
+
+      const verificationToken = await generateVerificationToken(
+        parsedInput.email
+      );
+
       return {
-        success: 'User registered',
+        success: 'Email confirmation sent',
       };
     } catch (error) {
       return {
@@ -60,3 +82,26 @@ export const emailRegister = actionClient
       };
     }
   });
+
+const generateVerificationToken = async (email: string) => {
+  const token = crypto.randomUUID();
+  const expires = new Date(Date.now() + 3600 * 1000);
+
+  const existingToken = await db.query.verificationTokens.findFirst({
+    where: eq(verificationTokens.email, email),
+  });
+
+  if (existingToken) {
+    await db
+      .delete(verificationTokens)
+      .where(eq(verificationTokens.id, existingToken.id));
+  }
+
+  await db.insert(verificationTokens).values({
+    token,
+    expires,
+    email,
+  });
+
+  return token;
+};
