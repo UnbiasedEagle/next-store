@@ -25,3 +25,15 @@ export const generateVerificationToken = async (email: string) => {
 
   return token;
 };
+
+export const getVerificationToken = async (token: string) => {
+  const verificationToken = await db.query.verificationTokens.findFirst({
+    where: eq(verificationTokens.token, token),
+  });
+
+  return verificationToken;
+};
+
+export const deleteVerificationToken = async (id: string) => {
+  await db.delete(verificationTokens).where(eq(verificationTokens.id, id));
+};
