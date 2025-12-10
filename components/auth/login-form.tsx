@@ -18,11 +18,13 @@ import Link from 'next/link';
 import { emailSignIn } from '@/server/actions/auth';
 import { useAction } from 'next-safe-action/hooks';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormSuccess } from './form-success';
 import { FormError } from './form-error';
 
 export const LoginForm = () => {
+  const router = useRouter();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -41,6 +43,9 @@ export const LoginForm = () => {
       }
       if (data?.success) {
         setSuccess(data.success);
+        setTimeout(() => {
+          router.push('/');
+        }, 1000);
       }
     },
   });

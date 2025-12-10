@@ -32,7 +32,7 @@ export const emailSignIn = actionClient
 
       if (!existingUser) {
         return {
-          error: 'User not found',
+          error: 'Email not found',
         };
       }
 
@@ -49,11 +49,12 @@ export const emailSignIn = actionClient
       await signIn('credentials', {
         email: existingUser.email,
         password: parsedInput.password,
-        redirectTo: '/',
+        redirect: false,
       });
 
-      return { success: 'User Signed In!' };
+      return { success: 'Login successful' };
     } catch (error) {
+      console.log(error);
       if (error instanceof AuthError) {
         switch (error.type) {
           case 'CredentialsSignin':
