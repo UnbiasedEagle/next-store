@@ -17,6 +17,8 @@ import {
   deleteVerificationToken,
 } from '@/server/lib/tokens';
 import { sendVerificationEmail } from '@/server/lib/email';
+import { signIn } from '../auth';
+import { AuthError } from 'next-auth';
 
 const actionClient = createSafeActionClient();
 
@@ -34,13 +36,37 @@ export const emailSignIn = actionClient
         };
       }
 
-      return {
-        success: 'User found',
-      };
+      if (!existingUser.emailVerified) {
+        const verificationToken = await generateVerificationToken(
+          existingUser.email
+        );
+        await sendVerificationEmail(existingUser.email, verificationToken);
+        return {
+          success: 'Email confirmation sent',
+        };
+      }
+
+      await signIn('credentials', {
+        email: existingUser.email,
+        password: parsedInput.password,
+        redirectTo: '/',
+      });
+
+      return { success: 'User Signed In!' };
     } catch (error) {
-      return {
-        error: 'Something went wrong',
-      };
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case 'CredentialsSignin':
+            return { error: 'Email or Password Incorrect' };
+          case 'AccessDenied':
+            return { error: error.message };
+          case 'OAuthSignInError':
+            return { error: error.message };
+          default:
+            return { error: 'Something went wrong' };
+        }
+      }
+      return { error: 'Something went wrong' };
     }
   });
 
