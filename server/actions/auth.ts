@@ -49,7 +49,7 @@ export const emailSignIn = actionClient
       await signIn('credentials', {
         email: existingUser.email,
         password: parsedInput.password,
-        redirect: false,
+        redirectTo: '/',
       });
 
       return { success: 'Login successful' };
@@ -67,7 +67,7 @@ export const emailSignIn = actionClient
             return { error: 'Something went wrong' };
         }
       }
-      return { error: 'Something went wrong' };
+      throw error;
     }
   });
 
@@ -110,7 +110,7 @@ export const emailRegister = actionClient
       return {
         success: 'Email confirmation sent',
       };
-    } catch (error) {
+    } catch {
       return {
         error: 'Something went wrong',
       };
@@ -161,7 +161,7 @@ export const verifyEmail = async (token: string) => {
     return {
       success: 'Email verified successfully',
     };
-  } catch (error) {
+  } catch {
     return {
       error: 'Something went wrong',
     };
