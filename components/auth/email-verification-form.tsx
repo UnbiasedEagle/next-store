@@ -36,7 +36,8 @@ export const EmailVerificationForm = () => {
           router.push('/auth/login');
         }, 2000);
       }
-    } catch (err) {
+    } catch (error) {
+      console.error('Email verification error:', error);
       setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);

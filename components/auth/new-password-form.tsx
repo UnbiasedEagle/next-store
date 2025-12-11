@@ -36,6 +36,9 @@ export const NewPasswordForm = () => {
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(ResetPasswordSchema),
+    defaultValues: {
+      password: '',
+    },
   });
 
   const { execute, status } = useAction(resetPassword, {
@@ -76,7 +79,7 @@ export const NewPasswordForm = () => {
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder='*********'
+                        placeholder='Enter your new password'
                         type='password'
                         autoComplete='current-password'
                         disabled={status === 'executing'}
