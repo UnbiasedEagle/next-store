@@ -5,16 +5,23 @@ import {
   LoginSchemaType,
   RegisterSchema,
   RegisterSchemaType,
+  ResetPasswordSchema,
+  ResetPasswordSchemaType,
 } from '@/lib/validations/auth';
 import { createSafeActionClient } from 'next-safe-action';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
-import { users } from '@/server/db/schema';
+import {
+  passwordResetTokens,
+  users,
+  verificationTokens,
+} from '@/server/db/schema';
 import bcrypt from 'bcryptjs';
 import {
   generateVerificationToken,
   getVerificationToken,
   deleteVerificationToken,
+  getPasswordResetToken,
 } from '@/server/lib/tokens';
 import { sendVerificationEmail } from '@/server/lib/email';
 import { signIn } from '../auth';
@@ -167,3 +174,62 @@ export const verifyEmail = async (token: string) => {
     };
   }
 };
+
+export const resetPassword = actionClient
+  .inputSchema(ResetPasswordSchema)
+  .action(async ({ parsedInput }: { parsedInput: ResetPasswordSchemaType }) => {
+    try {
+      if (!parsedInput.token) {
+        return {
+          error: 'Missing token',
+        };
+      }
+
+      const existingToken = await getPasswordResetToken(parsedInput.token);
+
+      if (!existingToken) {
+        return {
+          error: 'Invalid token',
+        };
+      }
+
+      const hasExpired = new Date(existingToken.expires) < new Date();
+
+      if (hasExpired) {
+        return {
+          error: 'Token has expired',
+        };
+      }
+
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.email, existingToken.email),
+      });
+
+      if (!existingUser) {
+        return {
+          error: 'Email does not exist',
+        };
+      }
+
+      const hashedPassword = await bcrypt.hash(parsedInput.password, 10);
+
+      await db.transaction(async (tx) => {
+        await tx
+          .update(users)
+          .set({ password: hashedPassword })
+          .where(eq(users.id, existingUser.id));
+
+        await tx
+          .delete(passwordResetTokens)
+          .where(eq(passwordResetTokens.id, existingToken.id));
+      });
+
+      return {
+        success: 'Password reset successfully',
+      };
+    } catch {
+      return {
+        error: 'Something went wrong',
+      };
+    }
+  });

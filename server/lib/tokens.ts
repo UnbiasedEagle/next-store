@@ -1,6 +1,6 @@
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
-import { verificationTokens } from '@/server/db/schema';
+import { passwordResetTokens, verificationTokens } from '@/server/db/schema';
 import crypto from 'crypto';
 
 export const generateVerificationToken = async (email: string) => {
@@ -36,4 +36,12 @@ export const getVerificationToken = async (token: string) => {
 
 export const deleteVerificationToken = async (id: string) => {
   await db.delete(verificationTokens).where(eq(verificationTokens.id, id));
+};
+
+export const getPasswordResetToken = async (token: string) => {
+  const passwordResetToken = await db.query.passwordResetTokens.findFirst({
+    where: eq(passwordResetTokens.token, token),
+  });
+
+  return passwordResetToken;
 };
