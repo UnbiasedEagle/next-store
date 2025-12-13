@@ -5,13 +5,13 @@ import {
   NewPasswordSchemaType,
 } from '@/lib/validations/auth';
 import { createSafeActionClient } from 'next-safe-action';
-import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
 import { passwordResetTokens, users } from '@/server/db/schema';
 import bcrypt from 'bcryptjs';
 import { getPasswordResetToken } from '@/server/lib/tokens';
+import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { db } from '@/server/db';
 
 const actionClient = createSafeActionClient();
 
@@ -19,6 +19,12 @@ export const newPassword = actionClient
   .inputSchema(NewPasswordSchema)
   .action(async ({ parsedInput }: { parsedInput: NewPasswordSchemaType }) => {
     try {
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const dbPool = drizzle(pool);
+
       if (!parsedInput.token) {
         return {
           error: 'Missing token',
@@ -53,14 +59,16 @@ export const newPassword = actionClient
 
       const hashedPassword = await bcrypt.hash(parsedInput.password, 10);
 
-      await db
-        .update(users)
-        .set({ password: hashedPassword })
-        .where(eq(users.id, existingUser.id));
+      await dbPool.transaction(async (tx) => {
+        await tx
+          .update(users)
+          .set({ password: hashedPassword })
+          .where(eq(users.id, existingUser.id));
 
-      await db
-        .delete(passwordResetTokens)
-        .where(eq(passwordResetTokens.id, existingToken.id));
+        await tx
+          .delete(passwordResetTokens)
+          .where(eq(passwordResetTokens.id, existingToken.id));
+      });
 
       return {
         success: 'Password reset successfully',
