@@ -116,9 +116,6 @@ export const RegisterForm = () => {
             />
             <FormSuccess message={success} />
             <FormError message={error} />
-            <Button size='sm' variant='link' asChild>
-              <Link href='/auth/reset'>Forgot Password?</Link>
-            </Button>
           </div>
           <Button
             disabled={status === 'executing'}

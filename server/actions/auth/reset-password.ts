@@ -1,3 +1,5 @@
+'use server';
+
 import {
   ResetPasswordSchema,
   ResetPasswordSchemaType,
@@ -29,5 +31,5 @@ export const resetPassword = action
 
     await sendPasswordResetEmail(email, passwordResetToken);
 
-    return { success: 'Reset Email Sent' };
+    return { success: 'Check your email for a link to reset your password.' };
   });

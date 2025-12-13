@@ -64,7 +64,6 @@ export const NewPasswordForm = () => {
       cardTitle='Enter a new password'
       backButtonHref='/auth/login'
       backButtonLabel='Back to login'
-      showSocials
     >
       <div>
         <Form {...form}>
@@ -92,9 +91,6 @@ export const NewPasswordForm = () => {
               />
               <FormSuccess message={success} />
               <FormError message={error} />
-              <Button size='sm' variant='link' asChild>
-                <Link href='/auth/reset'>Forgot your password</Link>
-              </Button>
             </div>
             <Button
               disabled={status === 'executing'}

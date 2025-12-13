@@ -10,6 +10,8 @@ import { eq } from 'drizzle-orm';
 import { passwordResetTokens, users } from '@/server/db/schema';
 import bcrypt from 'bcryptjs';
 import { getPasswordResetToken } from '@/server/lib/tokens';
+import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 const actionClient = createSafeActionClient();
 
@@ -51,21 +53,20 @@ export const newPassword = actionClient
 
       const hashedPassword = await bcrypt.hash(parsedInput.password, 10);
 
-      await db.transaction(async (tx) => {
-        await tx
-          .update(users)
-          .set({ password: hashedPassword })
-          .where(eq(users.id, existingUser.id));
+      await db
+        .update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.id, existingUser.id));
 
-        await tx
-          .delete(passwordResetTokens)
-          .where(eq(passwordResetTokens.id, existingToken.id));
-      });
+      await db
+        .delete(passwordResetTokens)
+        .where(eq(passwordResetTokens.id, existingToken.id));
 
       return {
         success: 'Password reset successfully',
       };
-    } catch {
+    } catch (error) {
+      console.log(error);
       return {
         error: 'Something went wrong',
       };

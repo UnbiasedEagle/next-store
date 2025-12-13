@@ -19,7 +19,6 @@ import { ResetPasswordSchema } from '@/lib/validations/auth';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { Button } from '../ui/button';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAction } from 'next-safe-action/hooks';
 import { resetPassword } from '@/server/actions/auth';
@@ -55,22 +54,21 @@ export const ResetPasswordForm = () => {
       cardTitle='Forgot your password? '
       backButtonHref='/auth/login'
       backButtonLabel='Back to login'
-      showSocials
     >
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
             <div>
               <FormField
                 control={form.control}
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder='developedbyed@gmail.com'
+                        placeholder='Enter your email'
                         type='email'
                         disabled={status === 'executing'}
                         autoComplete='email'
@@ -83,9 +81,6 @@ export const ResetPasswordForm = () => {
               />
               <FormSuccess message={success} />
               <FormError message={error} />
-              <Button size={'sm'} variant={'link'} asChild>
-                <Link href='/auth/reset'>Forgot your password</Link>
-              </Button>
             </div>
             <Button
               disabled={status === 'executing'}
@@ -95,7 +90,7 @@ export const ResetPasswordForm = () => {
                 status === 'executing' ? 'animate-pulse' : ''
               )}
             >
-              Reset Password
+              Send Reset Link
             </Button>
           </form>
         </Form>
