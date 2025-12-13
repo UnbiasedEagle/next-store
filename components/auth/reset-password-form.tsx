@@ -1,12 +1,8 @@
 'use client';
 
 import { AuthCard } from './auth-card';
-import { useForm } from 'react-hook-form';
-import {
-  NewPasswordSchema,
-  NewPasswordSchemaType,
-} from '@/lib/validations/auth';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { FormSuccess } from './form-success';
+import { FormError } from './form-error';
 import {
   Form,
   FormControl,
@@ -15,33 +11,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '../ui/form';
+import { useForm } from 'react-hook-form';
+import { ResetPasswordSchemaType } from '@/lib/validations/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ResetPasswordSchema } from '@/lib/validations/auth';
+import { Input } from '../ui/input';
 import { useState } from 'react';
-import { FormSuccess } from './form-success';
-import { FormError } from './form-error';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { useSearchParams } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { newPassword } from '@/server/actions/auth';
+import { resetPassword } from '@/server/actions/auth';
 
-export const NewPasswordForm = () => {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
-
-  const [error, setError] = useState('');
+export const ResetPasswordForm = () => {
   const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
-  const form = useForm<NewPasswordSchemaType>({
-    resolver: zodResolver(NewPasswordSchema),
+  const form = useForm<ResetPasswordSchemaType>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      password: '',
+      email: '',
     },
   });
 
-  const { execute, status } = useAction(newPassword, {
+  const { execute, status } = useAction(resetPassword, {
     onSuccess: ({ data }) => {
       if (data?.error) {
         setError(data.error);
@@ -52,37 +46,34 @@ export const NewPasswordForm = () => {
     },
   });
 
-  const onSubmit = (values: NewPasswordSchemaType) => {
-    execute({
-      token: token!,
-      password: values.password,
-    });
+  const onSubmit = (values: ResetPasswordSchemaType) => {
+    execute({ email: values.email });
   };
 
   return (
     <AuthCard
-      cardTitle='Enter a new password'
+      cardTitle='Forgot your password? '
       backButtonHref='/auth/login'
       backButtonLabel='Back to login'
       showSocials
     >
       <div>
         <Form {...form}>
-          <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <div>
               <FormField
                 control={form.control}
-                name='password'
+                name='email'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder='Enter your new password'
-                        type='password'
-                        autoComplete='current-password'
+                        placeholder='developedbyed@gmail.com'
+                        type='email'
                         disabled={status === 'executing'}
+                        autoComplete='email'
                       />
                     </FormControl>
                     <FormDescription />
@@ -92,7 +83,7 @@ export const NewPasswordForm = () => {
               />
               <FormSuccess message={success} />
               <FormError message={error} />
-              <Button size='sm' variant='link' asChild>
+              <Button size={'sm'} variant={'link'} asChild>
                 <Link href='/auth/reset'>Forgot your password</Link>
               </Button>
             </div>

@@ -1,8 +1,8 @@
 'use server';
 
 import {
-  ResetPasswordSchema,
-  ResetPasswordSchemaType,
+  NewPasswordSchema,
+  NewPasswordSchemaType,
 } from '@/lib/validations/auth';
 import { createSafeActionClient } from 'next-safe-action';
 import { db } from '@/server/db';
@@ -13,9 +13,9 @@ import { getPasswordResetToken } from '@/server/lib/tokens';
 
 const actionClient = createSafeActionClient();
 
-export const resetPassword = actionClient
-  .inputSchema(ResetPasswordSchema)
-  .action(async ({ parsedInput }: { parsedInput: ResetPasswordSchemaType }) => {
+export const newPassword = actionClient
+  .inputSchema(NewPasswordSchema)
+  .action(async ({ parsedInput }: { parsedInput: NewPasswordSchemaType }) => {
     try {
       if (!parsedInput.token) {
         return {

@@ -21,3 +21,22 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 
   return data;
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const domain = getBaseUrl();
+  const resetLink = `${domain}/auth/new-password?token=${token}`;
+
+  const { data, error } = await resend.emails.send({
+    from: 'Next Store <onboarding@resend.dev>',
+    to: email,
+    subject: 'Next Store - Password Reset',
+    html: `<p>Click to <a href='${resetLink}'>reset your password</a></p>`,
+  });
+
+  if (error) {
+    console.error('Failed to send password reset email:', error);
+    throw new Error('Failed to send password reset email');
+  }
+
+  return data;
+};
