@@ -73,8 +73,7 @@ export const newPassword = actionClient
       return {
         success: 'Password reset successfully',
       };
-    } catch (error) {
-      console.log(error);
+    } catch {
       return {
         error: 'Something went wrong',
       };

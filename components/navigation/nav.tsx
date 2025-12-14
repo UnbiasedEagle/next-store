@@ -14,7 +14,7 @@ export const Nav = async () => {
       <nav>
         <ul className='flex justify-between items-center'>
           <li>
-            <Link href='/'>
+            <Link href='/' aria-label='Next Store'>
               <Logo />
             </Link>
           </li>
@@ -23,7 +23,7 @@ export const Nav = async () => {
               <Button asChild>
                 <Link href='/auth/login'>
                   <LogIn size={16} />
-                  <span>Sign In</span>
+                  <span>Login</span>
                 </Link>
               </Button>
             </li>

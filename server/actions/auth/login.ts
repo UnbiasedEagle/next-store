@@ -44,7 +44,16 @@ export const emailSignIn = actionClient
 
       return { success: 'Login successful' };
     } catch (error) {
-      console.log(error);
+      if (
+        error &&
+        typeof error === 'object' &&
+        'digest' in error &&
+        typeof error.digest === 'string' &&
+        error.digest.startsWith('NEXT_REDIRECT')
+      ) {
+        throw error;
+      }
+
       if (error instanceof AuthError) {
         switch (error.type) {
           case 'CredentialsSignin':
