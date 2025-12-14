@@ -11,14 +11,20 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { LogOut, Settings, TruckIcon } from 'lucide-react';
+import { LogOut, Moon, Settings, Sun, TruckIcon } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+import { useTheme } from 'next-themes';
+import { useState } from 'react';
+import { Switch } from '../ui/switch';
 
 interface UserButtonProps {
   user: User;
 }
 
 export const UserButton = ({ user }: UserButtonProps) => {
+  const { setTheme, theme } = useTheme();
+  const [checked, setChecked] = useState(theme === 'dark');
+
   const router = useRouter();
 
   if (!user) {
@@ -26,7 +32,7 @@ export const UserButton = ({ user }: UserButtonProps) => {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger>
         <Avatar className='h-7 w-7'>
           {user.image && <AvatarImage src={user.image} alt={user.name!} />}
@@ -77,6 +83,37 @@ export const UserButton = ({ user }: UserButtonProps) => {
           />
           Settings
         </DropdownMenuItem>
+        {theme && (
+          <DropdownMenuItem className='py-2 font-medium cursor-pointer ease-in-out'>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className='flex items-center group gap-2'
+            >
+              <div className='relative flex mr-3'>
+                <Sun
+                  className='group-hover:text-yellow-600  absolute group-hover:rotate-180  dark:scale-0 dark:-rotate-90 transition-all duration-750 ease-in-out'
+                  size={14}
+                />
+                <Moon
+                  className='group-hover:text-blue-400  scale-0 rotate-90 dark:rotate-0  dark:scale-100 transition-all ease-in-out duration-750'
+                  size={14}
+                />
+              </div>
+              <p className='dark:text-blue-400 text-secondary-foreground/75'>
+                {theme[0].toUpperCase() + theme.slice(1)} Mode
+              </p>
+              <Switch
+                className='scale-75 '
+                checked={checked}
+                onCheckedChange={(e) => {
+                  setChecked((prev) => !prev);
+                  if (e) setTheme('dark');
+                  if (!e) setTheme('light');
+                }}
+              />
+            </div>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           onClick={() => signOut()}
           className='py-2 group focus:bg-destructive/30 font-medium cursor-pointer '

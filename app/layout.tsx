@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 import { Nav } from '@/components/navigation/nav';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 const roboto = Roboto({
   weight: ['400', '500', '700'],
@@ -22,10 +23,17 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang='en'>
       <body className={`${roboto.variable} font-sans antialiased`}>
-        <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <Nav />
-          {children}
-        </div>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className='mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8'>
+            <Nav />
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
