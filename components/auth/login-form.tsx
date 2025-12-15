@@ -1,9 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { AuthCard } from './auth-card';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginSchema, LoginSchemaType } from '@/lib/validations/auth';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,15 +10,18 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { emailSignIn } from '@/server/actions/auth';
-import { useAction } from 'next-safe-action/hooks';
 import { cn } from '@/lib/utils';
+import { LoginSchema, LoginSchemaType } from '@/lib/validations/auth';
+import { emailSignIn } from '@/server/actions/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { FormSuccess } from './form-success';
+import { useForm } from 'react-hook-form';
+import { AuthCard } from './auth-card';
 import { FormError } from './form-error';
+import { FormSuccess } from './form-success';
 
 export const LoginForm = () => {
   const router = useRouter();

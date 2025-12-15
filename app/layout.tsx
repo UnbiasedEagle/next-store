@@ -1,8 +1,8 @@
+import { Nav } from '@/components/navigation/nav';
+import { ThemeProvider } from '@/providers/theme-provider';
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
-import { Nav } from '@/components/navigation/nav';
-import { ThemeProvider } from '@/components/providers/theme-provider';
 
 const roboto = Roboto({
   weight: ['400', '500', '700'],
