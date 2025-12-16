@@ -6,12 +6,22 @@ export const SettingsSchema = z
     image: z.optional(z.string()),
     isTwoFactorEnabled: z.optional(z.boolean()),
     email: z.optional(z.email()),
-    password: z.optional(z.string().min(8)),
-    newPassword: z.optional(z.string().min(8)),
+    password: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 8, {
+        message: 'Password must be at least 8 characters long',
+      }),
+    newPassword: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 8, {
+        message: 'New password must be at least 8 characters long',
+      }),
   })
   .refine(
     (data) => {
-      if (data.password && !data.newPassword) {
+      if (data.password && data.password.length > 0 && !data.newPassword) {
         return false;
       }
       return true;

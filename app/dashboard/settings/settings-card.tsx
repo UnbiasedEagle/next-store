@@ -21,8 +21,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { SettingsSchemaType } from '@/lib/validations/settings';
+import { SettingsSchema, SettingsSchemaType } from '@/lib/validations/settings';
 import { settings } from '@/server/actions/settings';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Session } from 'next-auth';
 import { useAction } from 'next-safe-action/hooks';
 import Image from 'next/image';
@@ -36,16 +37,18 @@ interface SettingsCardProps {
 export const SettingsCard = ({ session }: SettingsCardProps) => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const [avatarUploading, setAvatarUploading] = useState<boolean>(false);
 
   const form = useForm<SettingsSchemaType>({
     defaultValues: {
-      password: undefined,
-      newPassword: undefined,
-      name: session.user?.name ?? undefined,
+      password: '',
+      newPassword: '',
+      name: session.user?.name ?? '',
       image: session.user?.image ?? undefined,
-      isTwoFactorEnabled: session.user?.isTwoFactorEnabled ?? undefined,
-      email: session.user?.email ?? undefined,
+      isTwoFactorEnabled: session.user?.isTwoFactorEnabled ?? false,
+      email: session.user?.email ?? '',
     },
+    resolver: zodResolver(SettingsSchema),
   });
 
   const { status, execute } = useAction(settings, {
@@ -77,7 +80,11 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
   const onSubmit = async (data: SettingsSchemaType) => {
     setSuccess('');
     setError('');
-    execute(data);
+    execute({
+      ...data,
+      password: data.password || undefined,
+      newPassword: data.newPassword || undefined,
+    });
   };
 
   return (
@@ -151,12 +158,12 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
+                      type='password'
                       placeholder='********'
                       disabled={status === 'executing' || session?.user.isOAuth}
                       {...field}
                     />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -169,12 +176,12 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
                   <FormLabel>New Password</FormLabel>
                   <FormControl>
                     <Input
+                      type='password'
                       placeholder='*******'
                       disabled={status === 'executing' || session?.user.isOAuth}
                       {...field}
                     />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}

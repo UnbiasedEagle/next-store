@@ -14,7 +14,6 @@ const action = createSafeActionClient();
 export const settings = action
   .inputSchema(SettingsSchema)
   .action(async ({ parsedInput: values }) => {
-    console.log(values);
     const session = await auth();
     if (!session?.user) {
       return {
@@ -25,8 +24,6 @@ export const settings = action
     const dbUser = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.id, session.user.id),
     });
-
-    console.log(dbUser);
 
     if (!dbUser) {
       return {

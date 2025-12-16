@@ -52,6 +52,8 @@ export const NewPasswordForm = () => {
   });
 
   const onSubmit = (values: NewPasswordSchemaType) => {
+    setError('');
+    setSuccess('');
     execute({
       token: token!,
       password: values.password,

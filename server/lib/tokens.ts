@@ -1,6 +1,10 @@
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
-import { passwordResetTokens, verificationTokens } from '@/server/db/schema';
+import {
+  passwordResetTokens,
+  twoFactorTokens,
+  verificationTokens,
+} from '@/server/db/schema';
 import crypto from 'crypto';
 
 export const generateVerificationToken = async (email: string) => {
@@ -61,6 +65,37 @@ export const generatePasswordResetToken = async (email: string) => {
   }
 
   await db.insert(passwordResetTokens).values({
+    token,
+    expires,
+    email,
+  });
+
+  return token;
+};
+
+export const getTwoFactorTokenByEmail = async (email: string) => {
+  const twoFactorToken = await db.query.twoFactorTokens.findFirst({
+    where: eq(twoFactorTokens.email, email),
+  });
+
+  return twoFactorToken;
+};
+
+export const generateTwoFactorToken = async (email: string) => {
+  const token = crypto.randomInt(100_000, 1_000_000).toString();
+  const expires = new Date(Date.now() + 3600 * 1000);
+
+  const existingToken = await db.query.twoFactorTokens.findFirst({
+    where: eq(twoFactorTokens.email, email),
+  });
+
+  if (existingToken) {
+    await db
+      .delete(twoFactorTokens)
+      .where(eq(twoFactorTokens.id, existingToken.id));
+  }
+
+  await db.insert(twoFactorTokens).values({
     token,
     expires,
     email,

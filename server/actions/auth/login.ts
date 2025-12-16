@@ -4,9 +4,16 @@ import { LoginSchema, LoginSchemaType } from '@/lib/validations/auth';
 import { createSafeActionClient } from 'next-safe-action';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
-import { users } from '@/server/db/schema';
-import { generateVerificationToken } from '@/server/lib/tokens';
-import { sendVerificationEmail } from '@/server/lib/email';
+import { twoFactorTokens, users } from '@/server/db/schema';
+import {
+  generateTwoFactorToken,
+  generateVerificationToken,
+  getTwoFactorTokenByEmail,
+} from '@/server/lib/tokens';
+import {
+  sendTwoFactorTokenByEmail,
+  sendVerificationEmail,
+} from '@/server/lib/email';
 import { signIn } from '../../auth';
 import { AuthError } from 'next-auth';
 
@@ -34,6 +41,38 @@ export const emailSignIn = actionClient
         return {
           success: 'Email confirmation sent',
         };
+      }
+
+      if (existingUser.twoFactorEnabled && existingUser.email) {
+        if (parsedInput.code) {
+          const twoFactorToken = await getTwoFactorTokenByEmail(
+            existingUser.email
+          );
+          if (!twoFactorToken) {
+            return {
+              error: 'Invalid code',
+            };
+          }
+          if (twoFactorToken.token !== parsedInput.code) {
+            return { error: 'Invalid Token' };
+          }
+          const hasExpired = new Date(twoFactorToken.expires) < new Date();
+          if (hasExpired) {
+            return { error: 'Token has expired' };
+          }
+          await db
+            .delete(twoFactorTokens)
+            .where(eq(twoFactorTokens.id, twoFactorToken.id));
+        } else {
+          const token = await generateTwoFactorToken(existingUser.email);
+
+          if (!token) {
+            return { error: 'Token not generated!' };
+          }
+
+          await sendTwoFactorTokenByEmail(existingUser.email, token);
+          return { twoFactor: 'Two Factor Token Sent!' };
+        }
       }
 
       await signIn('credentials', {
