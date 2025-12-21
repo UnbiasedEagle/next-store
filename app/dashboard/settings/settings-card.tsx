@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { UploadButton } from '@/lib/uploadthing';
 import { SettingsSchema, SettingsSchemaType } from '@/lib/validations/settings';
 import { settings } from '@/server/actions/settings';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,7 +45,7 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
       password: '',
       newPassword: '',
       name: session.user?.name ?? '',
-      image: session.user?.image ?? undefined,
+      image: session.user?.image || '',
       isTwoFactorEnabled: session.user?.isTwoFactorEnabled ?? false,
       email: session.user?.email ?? '',
     },
@@ -119,7 +120,7 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
             <FormField
               control={form.control}
               name='image'
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Avatar</FormLabel>
                   <div className='flex items-center gap-4'>
@@ -137,15 +138,33 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
                         alt='User Image'
                       />
                     )}
-                  </div>
-                  <FormControl>
-                    <Input
-                      placeholder='User Image'
-                      type='hidden'
-                      disabled={status === 'executing'}
-                      {...field}
+                    <UploadButton
+                      className='scale-75 ut-button:ring-primary  ut-label:bg-red-50  ut-button:bg-primary/75  hover:ut-button:bg-primary ut:button:transition-all ut-button:duration-500  ut-label:hidden ut-allowed-content:hidden'
+                      endpoint='avatarUploader'
+                      onUploadBegin={() => {
+                        setAvatarUploading(true);
+                      }}
+                      onUploadError={(error) => {
+                        form.setError('image', {
+                          type: 'validate',
+                          message: error.message,
+                        });
+                        setAvatarUploading(false);
+                        return;
+                      }}
+                      onClientUploadComplete={(res) => {
+                        form.setValue('image', res[0].url!);
+                        setAvatarUploading(false);
+                        return;
+                      }}
+                      content={{
+                        button({ ready }) {
+                          if (ready) return <div>Change Avatar</div>;
+                          return <div>Uploading...</div>;
+                        },
+                      }}
                     />
-                  </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -211,7 +230,10 @@ export const SettingsCard = ({ session }: SettingsCardProps) => {
             />
             <FormError message={error} />
             <FormSuccess message={success} />
-            <Button type='submit' disabled={status === 'executing'}>
+            <Button
+              type='submit'
+              disabled={status === 'executing' || avatarUploading}
+            >
               Update your settings
             </Button>
           </form>

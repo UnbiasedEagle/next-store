@@ -22,17 +22,20 @@ import { useForm } from 'react-hook-form';
 import { AuthCard } from './auth-card';
 import { FormError } from './form-error';
 import { FormSuccess } from './form-success';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp';
 
 export const LoginForm = () => {
   const router = useRouter();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: '',
       password: '',
+      code: '',
     },
   });
 
@@ -47,6 +50,9 @@ export const LoginForm = () => {
           router.push('/');
         }, 1000);
       }
+      if (data?.twoFactor) {
+        setShowTwoFactor(true);
+      }
     },
   });
 
@@ -60,63 +66,97 @@ export const LoginForm = () => {
     <AuthCard
       cardTitle='Welcome back!'
       backButtonHref='/auth/register'
-      backButtonLabel="Don't have an account?"
-      showSocials
+      backButtonLabel={showTwoFactor ? '' : "Don't have an account?"}
+      showSocials={!showTwoFactor}
     >
       <Form {...form}>
         <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
-          <div className='space-y-4'>
+          {showTwoFactor && (
             <FormField
               control={form.control}
-              name='email'
+              name='code'
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
+                <FormItem className='space-y-4'>
+                  <FormLabel>
+                    We&apos;ve sent you a two factor code to your email.
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder='Enter your email'
+                    <InputOTP
+                      disabled={status === 'executing'}
                       {...field}
-                      type='email'
-                      autoComplete='email'
-                    />
+                      maxLength={6}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter your password'
-                      {...field}
-                      type='password'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormSuccess message={success} />
-            <FormError message={error} />
-            <Button size='sm' variant='link' asChild>
-              <Link href='/auth/reset-password'>Forgot Password?</Link>
-            </Button>
-          </div>
-          <Button
-            disabled={status === 'executing'}
-            className={cn(
-              'w-full',
-              status === 'executing' ? 'animate-pulse' : ''
-            )}
-            type='submit'
-          >
-            Login
-          </Button>
+          )}
+          {!showTwoFactor && (
+            <>
+              <div className='space-y-4'>
+                <FormField
+                  control={form.control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter your email'
+                          {...field}
+                          type='email'
+                          autoComplete='email'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter your password'
+                          {...field}
+                          type='password'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormSuccess message={success} />
+                <FormError message={error} />
+                <Button size='sm' variant='link' asChild>
+                  <Link href='/auth/reset-password'>Forgot Password?</Link>
+                </Button>
+              </div>
+              <Button
+                disabled={status === 'executing'}
+                className={cn(
+                  'w-full',
+                  status === 'executing' ? 'animate-pulse' : ''
+                )}
+                type='submit'
+              >
+                Login
+              </Button>
+            </>
+          )}
         </form>
       </Form>
     </AuthCard>

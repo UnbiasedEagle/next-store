@@ -71,7 +71,7 @@ export const emailSignIn = actionClient
           }
 
           await sendTwoFactorTokenByEmail(existingUser.email, token);
-          return { twoFactor: 'Two Factor Token Sent!' };
+          return { twoFactor: 'Check your email for the 2FA code' };
         }
       }
 
