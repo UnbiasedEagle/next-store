@@ -23,6 +23,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Tiptap from './tiptap';
 
 export const ProductForm = () => {
   const form = useForm<ProductSchemaType>({
@@ -80,7 +81,7 @@ export const ProductForm = () => {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    {/* <Tiptap val={field.value} /> */}
+                    <Tiptap val={field.value} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
