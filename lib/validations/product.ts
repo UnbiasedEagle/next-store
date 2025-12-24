@@ -8,17 +8,8 @@ export const ProductSchema = z.object({
   description: z.string().min(40, {
     message: 'Description must be at least 40 characters long',
   }),
-  price: z
-    .number({
-      error: (issue) => {
-        switch (issue.code) {
-          case 'invalid_type':
-            return 'Price must be a number';
-          default:
-            return 'Invalid price';
-        }
-      },
-    })
+  price: z.coerce
+    .number<number>()
     .positive({ message: 'Price must be a positive number' }),
 });
 

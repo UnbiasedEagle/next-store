@@ -1,8 +1,7 @@
 'use client';
 
-import { ProductSchemaType } from '@/lib/validations/product';
+import { ProductSchema, ProductSchemaType } from '@/lib/validations/product';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ProductSchema } from '@/lib/validations/product';
 import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -24,6 +23,9 @@ import { Input } from '@/components/ui/input';
 import { DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Tiptap from './tiptap';
+import { useAction } from 'next-safe-action/hooks';
+import { createProduct } from '@/server/actions/products/create-product';
+import { toast } from 'sonner';
 
 export const ProductForm = () => {
   const form = useForm<ProductSchemaType>({
@@ -39,13 +41,28 @@ export const ProductForm = () => {
   const searchParams = useSearchParams();
   const editMode = searchParams.get('id');
 
+  const { status, execute } = useAction(createProduct, {
+    onSuccess: ({ data }) => {
+      if (data?.error) {
+        toast.error(data.error);
+      }
+      if (data?.success) {
+        router.push('/dashboard/products');
+        toast.success(data.success);
+      }
+    },
+    onExecute: () => {
+      if (editMode) {
+        toast.loading('Editing Product');
+      }
+      if (!editMode) {
+        toast.loading('Creating Product');
+      }
+    },
+  });
+
   const onSubmit = (data: ProductSchemaType) => {
-    if (editMode) {
-      // Update product
-    } else {
-      // Create product
-    }
-    router.push('/dashboard/products');
+    execute(data);
   };
 
   return (
