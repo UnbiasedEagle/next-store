@@ -4,6 +4,7 @@ import { ProductSchema, ProductSchemaType } from '@/lib/validations/product';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -40,23 +41,24 @@ export const ProductForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editMode = searchParams.get('id');
+  const toastIdRef = useRef<string | number | undefined>(undefined);
 
   const { status, execute } = useAction(createProduct, {
     onSuccess: ({ data }) => {
       if (data?.error) {
-        toast.error(data.error);
+        toast.error(data.error, { id: toastIdRef.current });
       }
       if (data?.success) {
+        toast.success(data.success, { id: toastIdRef.current });
         router.push('/dashboard/products');
-        toast.success(data.success);
       }
     },
     onExecute: () => {
       if (editMode) {
-        toast.loading('Editing Product');
+        toastIdRef.current = toast.loading('Editing Product');
       }
       if (!editMode) {
-        toast.loading('Creating Product');
+        toastIdRef.current = toast.loading('Creating Product');
       }
     },
   });
