@@ -4,7 +4,7 @@ import { ProductSchema, ProductSchemaType } from '@/lib/validations/product';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ import Tiptap from './tiptap';
 import { useAction } from 'next-safe-action/hooks';
 import { createProduct } from '@/server/actions/products/create-product';
 import { toast } from 'sonner';
+import { getProduct } from '@/server/actions/products/get-product';
 
 export const ProductForm = () => {
   const form = useForm<ProductSchemaType>({
@@ -40,7 +41,7 @@ export const ProductForm = () => {
   });
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editMode = searchParams.get('id');
+  const productId = searchParams.get('id');
   const toastIdRef = useRef<string | number | undefined>(undefined);
 
   const { status, execute } = useAction(createProduct, {
@@ -54,14 +55,40 @@ export const ProductForm = () => {
       }
     },
     onExecute: () => {
-      if (editMode) {
+      if (productId) {
         toastIdRef.current = toast.loading('Editing Product');
       }
-      if (!editMode) {
+      if (!productId) {
         toastIdRef.current = toast.loading('Creating Product');
       }
     },
   });
+
+  const populateFormForEdit = useCallback(
+    async (id: string) => {
+      const { data } = await getProduct({ id: Number(id) });
+
+      if (data?.success) {
+        const product = data.success;
+        form.reset({
+          id: product.id,
+          title: product.title,
+          description: product.description,
+          price: product.price,
+        });
+      } else {
+        toast.error(data?.error);
+        router.push('/dashboard/products');
+      }
+    },
+    [form, router]
+  );
+
+  useEffect(() => {
+    if (productId) {
+      populateFormForEdit(productId);
+    }
+  }, [productId, populateFormForEdit]);
 
   const onSubmit = (data: ProductSchemaType) => {
     execute(data);
@@ -70,9 +97,9 @@ export const ProductForm = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{editMode ? 'Edit Product' : 'Create Product'}</CardTitle>
+        <CardTitle>{productId ? 'Edit Product' : 'Create Product'}</CardTitle>
         <CardDescription>
-          {editMode
+          {productId
             ? 'Make changes to existing product'
             : 'Add a brand new product'}
         </CardDescription>
@@ -140,7 +167,7 @@ export const ProductForm = () => {
               }
               type='submit'
             >
-              {editMode ? 'Save Changes' : 'Create Product'}
+              {productId ? 'Save Changes' : 'Create Product'}
             </Button>
           </form>
         </Form>

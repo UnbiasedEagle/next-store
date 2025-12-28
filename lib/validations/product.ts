@@ -13,4 +13,12 @@ export const ProductSchema = z.object({
     .positive({ message: 'Price must be a positive number' }),
 });
 
+export const GetProductSchema = z.object({
+  id: z.number(),
+});
+
+export const DeleteProductSchema = z.object({
+  id: z.number(),
+});
+
 export type ProductSchemaType = z.infer<typeof ProductSchema>;
