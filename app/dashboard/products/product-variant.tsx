@@ -24,6 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PropsWithChildren, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { InputTags } from './input-tags';
+import { VariantImages } from './variant-images';
 
 interface ProductVariantProps {
   productID?: number;
@@ -111,7 +112,21 @@ export const ProductVariant = ({
                 </FormItem>
               )}
             />
+            <VariantImages />
             <div className='flex gap-4 items-center justify-center'>
+              {editMode && variant && (
+                <Button
+                  variant={'destructive'}
+                  type='button'
+                  //   disabled={variantAction.status === 'executing'}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // variantAction.execute({ id: variant.id });
+                  }}
+                >
+                  Delete Variant
+                </Button>
+              )}
               <Button
                 disabled={!form.formState.isValid || !form.formState.isDirty}
                 type='submit'
