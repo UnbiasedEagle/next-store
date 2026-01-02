@@ -21,10 +21,13 @@ import { Input } from '@/components/ui/input';
 import { VariantsWithImagesTags } from '@/lib/infer-type';
 import { VariantSchema, VariantSchemaType } from '@/lib/validations/product';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { InputTags } from './input-tags';
 import { VariantImages } from './variant-images';
+import { createVariant } from '@/server/actions/variants';
+import { toast } from 'sonner';
+import { useAction } from 'next-safe-action/hooks';
 
 interface ProductVariantProps {
   productID?: number;
@@ -38,23 +41,80 @@ export const ProductVariant = ({
   variant,
   editMode,
 }: PropsWithChildren<ProductVariantProps>) => {
-  const form = useForm({
+  const createVariantToastRef = useRef<string | number | undefined>(undefined);
+  const [open, setOpen] = useState(false);
+
+  const form = useForm<VariantSchemaType>({
     resolver: zodResolver(VariantSchema),
     defaultValues: {
       tags: [],
       variantImages: [],
       color: '#000000',
-      editMode,
+      editMode: false,
       id: undefined,
       productID,
       productType: 'Enter variant title',
     },
   });
-  const [open, setOpen] = useState(false);
+
+  const { status, execute } = useAction(createVariant, {
+    onExecute() {
+      createVariantToastRef.current = toast.loading(
+        editMode ? 'Editing variant' : 'Creating variant',
+        {
+          duration: 1,
+        }
+      );
+      setOpen(false);
+    },
+    onSuccess({ data }) {
+      if (data?.error) {
+        toast.error(data.error, { id: createVariantToastRef.current });
+      }
+      if (data?.success) {
+        toast.success(data.success, { id: createVariantToastRef.current });
+      }
+    },
+  });
 
   const onSubmit = (data: VariantSchemaType) => {
-    console.log(data);
+    execute(data);
   };
+
+  useEffect(() => {
+    if (!open) return;
+
+    if (editMode && variant) {
+      const formValues = {
+        editMode: true,
+        id: variant.id,
+        productID: variant.productId,
+        productType: variant.productType,
+        color: variant.color,
+        tags: variant.variantTags.map((tag) => tag.tag),
+        variantImages: variant.variantImages.map((img) => ({
+          name: img.name,
+          size: img.size,
+          url: img.imageUrl,
+        })),
+      };
+
+      form.reset(formValues, { keepDefaultValues: false });
+    } else {
+      form.reset(
+        {
+          tags: [],
+          variantImages: [],
+          color: '#000000',
+          editMode: false,
+          id: undefined,
+          productID,
+          productType: 'Enter variant title',
+        },
+        { keepDefaultValues: false }
+      );
+    }
+  }, [open, editMode, variant, form, productID]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -128,7 +188,11 @@ export const ProductVariant = ({
                 </Button>
               )}
               <Button
-                disabled={!form.formState.isValid || !form.formState.isDirty}
+                disabled={
+                  status === 'executing' ||
+                  !form.formState.isValid ||
+                  !form.formState.isDirty
+                }
                 type='submit'
               >
                 {editMode ? 'Update Variant' : 'Create Variant'}
