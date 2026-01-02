@@ -23,6 +23,7 @@ import { VariantSchema, VariantSchemaType } from '@/lib/validations/product';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PropsWithChildren, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { InputTags } from './input-tags';
 
 interface ProductVariantProps {
   productID?: number;
@@ -93,7 +94,19 @@ export const ProductVariant = ({
                   <FormControl>
                     <Input type='color' {...field} />
                   </FormControl>
-
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='tags'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <FormControl>
+                    <InputTags {...field} onChange={(e) => field.onChange(e)} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
