@@ -5,6 +5,14 @@ import { columns } from './columns';
 
 const ProductsPage = async () => {
   const products = await db.query.products.findMany({
+    with: {
+      productVariants: {
+        with: {
+          variantImages: true,
+          variantTags: true,
+        },
+      },
+    },
     orderBy: (products, { desc }) => [desc(products.id)],
   });
 
