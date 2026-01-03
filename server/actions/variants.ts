@@ -138,6 +138,11 @@ export const deleteVariant = action
         .where(eq(productVariants.id, id))
         .returning();
 
+      algoliaClient.deleteObject({
+        indexName: 'products',
+        objectID: id.toString(),
+      });
+
       return {
         success: deletedVariant.length
           ? `Deleted ${deletedVariant[0].productType}`
