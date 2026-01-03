@@ -12,6 +12,12 @@ import {
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import z from 'zod';
+import { algoliasearch } from 'algoliasearch';
+
+const algoliaClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
+  process.env.ALGOLIA_ADMIN_KEY!
+);
 
 const action = createSafeActionClient();
 
@@ -60,6 +66,15 @@ export const createVariant = action
               order: idx,
             }))
           );
+          algoliaClient.partialUpdateObject({
+            indexName: 'products',
+            objectID: editVariant[0].id.toString(),
+            attributesToUpdate: {
+              id: editVariant[0].id,
+              productType: editVariant[0].productType,
+              variantImages: newVariantImages[0].url,
+            },
+          });
           revalidatePath('/dashboard/products');
           return { success: `Edited ${productType}` };
         }
@@ -90,6 +105,19 @@ export const createVariant = action
               order: idx,
             }))
           );
+          if (product) {
+            algoliaClient.saveObject({
+              indexName: 'products',
+              body: {
+                objectID: newVariant[0].id.toString(),
+                id: newVariant[0].productId,
+                title: product.title,
+                price: product.price,
+                productType: newVariant[0].productType,
+                variantImages: newVariantImages[0].url,
+              },
+            });
+          }
           revalidatePath('/dashboard/products');
           return { success: `Added ${productType}` };
         }
