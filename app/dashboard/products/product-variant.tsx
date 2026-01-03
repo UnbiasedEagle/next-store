@@ -25,9 +25,10 @@ import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { InputTags } from './input-tags';
 import { VariantImages } from './variant-images';
-import { createVariant } from '@/server/actions/variants';
+import { createVariant, deleteVariant } from '@/server/actions/variants';
 import { toast } from 'sonner';
 import { useAction } from 'next-safe-action/hooks';
+import { useRouter } from 'next/navigation';
 
 interface ProductVariantProps {
   productID?: number;
@@ -41,6 +42,8 @@ export const ProductVariant = ({
   variant,
   editMode,
 }: PropsWithChildren<ProductVariantProps>) => {
+  const router = useRouter();
+
   const createVariantToastRef = useRef<string | number | undefined>(undefined);
   const [open, setOpen] = useState(false);
 
@@ -116,6 +119,24 @@ export const ProductVariant = ({
     }
   }, [open, editMode, variant, form, productID]);
 
+  const deleteVariantAction = useAction(deleteVariant, {
+    onExecute() {
+      toast.loading('Deleting variant');
+    },
+    onSuccess({ data }) {
+      toast.dismiss();
+
+      if (data?.error) {
+        toast.error(data.error);
+      }
+      if (data?.success) {
+        toast.success(data.success);
+        setOpen(false);
+        router.refresh();
+      }
+    },
+  });
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -178,10 +199,10 @@ export const ProductVariant = ({
                 <Button
                   variant={'destructive'}
                   type='button'
-                  //   disabled={variantAction.status === 'executing'}
+                  disabled={deleteVariantAction.status === 'executing'}
                   onClick={(e) => {
                     e.preventDefault();
-                    // variantAction.execute({ id: variant.id });
+                    deleteVariantAction.execute({ id: variant.id });
                   }}
                 >
                   Delete Variant

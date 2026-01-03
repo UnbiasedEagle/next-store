@@ -11,6 +11,7 @@ import {
 } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import z from 'zod';
 
 const action = createSafeActionClient();
 
@@ -99,3 +100,23 @@ export const createVariant = action
       }
     }
   );
+
+export const deleteVariant = action
+  .inputSchema(z.object({ id: z.number() }))
+  .action(async ({ parsedInput: { id } }) => {
+    try {
+      const deletedVariant = await db
+        .delete(productVariants)
+        .where(eq(productVariants.id, id))
+        .returning();
+
+      return {
+        success: deletedVariant.length
+          ? `Deleted ${deletedVariant[0].productType}`
+          : 'Variant deleted',
+      };
+    } catch (error) {
+      console.error('deleteVariant failed:', error);
+      return { error: 'Failed to delete variant' };
+    }
+  });
