@@ -10,3 +10,10 @@ export const getBaseUrl = () => {
 
   return process.env.NEXT_PUBLIC_URL;
 };
+
+export function formatPrice(price: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(price);
+}
