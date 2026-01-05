@@ -71,6 +71,13 @@
       "when": 1767321751160,
       "tag": "0009_amusing_dazzler",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1767596205935,
+      "tag": "0010_lame_nebula",
+      "breakpoints": true
     }
   ]
 }

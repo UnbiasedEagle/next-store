@@ -1,6 +1,7 @@
 import { ProductPick } from '@/components/products/product-pick';
 import { ProductShowcase } from '@/components/products/product-showcase';
 import { ProductType } from '@/components/products/product-type';
+import { Reviews } from '@/components/reviews/reviews';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice } from '@/lib/utils';
 import { db } from '@/server/db';
@@ -93,7 +94,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
           {/* <AddCart /> */}
         </div>
       </section>
-      {/* <Reviews productID={variant.productID} /> */}
+      <Reviews productID={variant.productId} />
     </main>
   );
 };

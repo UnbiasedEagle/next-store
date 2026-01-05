@@ -8,6 +8,7 @@ import {
   pgEnum,
   serial,
   real,
+  index,
 } from 'drizzle-orm/pg-core';
 import type { AdapterAccountType } from '@auth/core/adapters';
 import { createId } from '@paralleldrive/cuid2';
@@ -144,6 +145,7 @@ export const variantTags = pgTable('variant_tags', {
 
 export const productRelations = relations(products, ({ many }) => ({
   productVariants: many(productVariants, { relationName: 'ProductToVariants' }),
+  reviews: many(reviews, { relationName: 'ProductToReviews' }),
 }));
 
 export const productVariantRelations = relations(
@@ -175,4 +177,44 @@ export const variantTagRelations = relations(variantTags, ({ one }) => ({
     references: [productVariants.id],
     relationName: 'VariantToTags',
   }),
+}));
+
+export const reviews = pgTable(
+  'reviews',
+  {
+    id: serial('id').primaryKey(),
+    rating: real('rating').notNull(),
+    comment: text('comment').notNull(),
+    created: timestamp('created').defaultNow(),
+    updated: timestamp('updated').defaultNow(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    productId: serial('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    {
+      productIdx: index('product_idx').on(table.productId),
+      userIdIdx: index('user_id_idx').on(table.userId),
+    },
+  ]
+);
+
+export const reviewRelations = relations(reviews, ({ one }) => ({
+  product: one(products, {
+    fields: [reviews.productId],
+    references: [products.id],
+    relationName: 'ProductToReviews',
+  }),
+  user: one(users, {
+    fields: [reviews.userId],
+    references: [users.id],
+    relationName: 'UserToReviews',
+  }),
+}));
+
+export const userRelations = relations(users, ({ many }) => ({
+  reviews: many(reviews, { relationName: 'UserToReviews' }),
 }));
