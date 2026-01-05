@@ -2,6 +2,7 @@ import { db } from '@/server/db';
 import { ReviewsForm } from './reviews-form';
 import { desc, eq } from 'drizzle-orm';
 import { reviews } from '@/server/db/schema';
+import { Review } from './review';
 
 interface ReviewsProps {
   productID: number;
@@ -20,7 +21,7 @@ export const Reviews = async ({ productID }: ReviewsProps) => {
         <div className='flex-1'>
           <h2 className='text-2xl font-bold mb-4'>Product Reviews</h2>
           <ReviewsForm />
-          {/* <Review reviews={data} /> */}
+          <Review reviews={data} />
         </div>
         <div className='flex-1 flex flex-col gap-2'>
           {/* <ReviewChart reviews={data} /> */}
