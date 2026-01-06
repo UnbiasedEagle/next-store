@@ -2,11 +2,18 @@
 
 import { useCartStore } from '@/lib/client-store';
 import { ShoppingBag } from 'lucide-react';
-import { Drawer, DrawerTrigger } from '../ui/drawer';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '../ui/drawer';
 import { AnimatePresence, motion } from 'framer-motion';
+import CartItems from './cart-items';
 
 export const CartDrawer = () => {
-  const { cart } = useCartStore();
+  const { cart, checkoutProgress } = useCartStore();
 
   return (
     <Drawer>
@@ -27,6 +34,14 @@ export const CartDrawer = () => {
           <ShoppingBag />
         </div>
       </DrawerTrigger>
+      <DrawerContent className='fixed bottom-0 left-0 max-h-[70vh] min-h-[50vh]'>
+        <DrawerHeader>
+          <DrawerTitle>Your cart</DrawerTitle>
+        </DrawerHeader>
+        <div className='overflow-auto p-4'>
+          {checkoutProgress === 'cart-page' && <CartItems />}
+        </div>
+      </DrawerContent>
     </Drawer>
   );
 };
