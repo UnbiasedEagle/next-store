@@ -6,11 +6,11 @@ import {
   Drawer,
   DrawerContent,
   DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
 } from '../ui/drawer';
 import { AnimatePresence, motion } from 'framer-motion';
 import CartItems from './cart-items';
+import { CartMessage } from './cart-message';
 
 export const CartDrawer = () => {
   const { cart, checkoutProgress } = useCartStore();
@@ -36,7 +36,7 @@ export const CartDrawer = () => {
       </DrawerTrigger>
       <DrawerContent className='fixed bottom-0 left-0 max-h-[70vh] min-h-[50vh]'>
         <DrawerHeader>
-          <DrawerTitle>Your cart</DrawerTitle>
+          <CartMessage />
         </DrawerHeader>
         <div className='overflow-auto p-4'>
           {checkoutProgress === 'cart-page' && <CartItems />}
