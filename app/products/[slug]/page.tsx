@@ -1,3 +1,4 @@
+import { AddCart } from '@/components/cart/add-cart';
 import { ProductPick } from '@/components/products/product-pick';
 import { ProductShowcase } from '@/components/products/product-showcase';
 import { ProductType } from '@/components/products/product-type';
@@ -97,7 +98,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
               />
             ))}
           </div>
-          {/* <AddCart /> */}
+          <AddCart />
         </div>
       </section>
       <Reviews productID={variant.productId} />
