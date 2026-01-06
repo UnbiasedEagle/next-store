@@ -3,6 +3,7 @@ import { ReviewsForm } from './reviews-form';
 import { desc, eq } from 'drizzle-orm';
 import { reviews } from '@/server/db/schema';
 import { Review } from './review';
+import { ReviewChart } from './review-chart';
 
 interface ReviewsProps {
   productID: number;
@@ -24,7 +25,7 @@ export const Reviews = async ({ productID }: ReviewsProps) => {
           <Review reviews={data} />
         </div>
         <div className='flex-1 flex flex-col gap-2'>
-          {/* <ReviewChart reviews={data} /> */}
+          <ReviewChart reviews={data} />
         </div>
       </div>
     </section>

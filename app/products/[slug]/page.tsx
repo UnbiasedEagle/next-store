@@ -58,7 +58,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
         <div className='flex-1'>
           <ProductShowcase variants={variant.product.productVariants} />
         </div>
-        <div className='flex  flex-col flex-1'>
+        <div className='flex flex-col flex-1'>
           <h2 className='text-2xl font-bold'>{variant?.product.title}</h2>
           <div>
             <ProductType variants={variant.product.productVariants} />
