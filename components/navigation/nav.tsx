@@ -4,6 +4,7 @@ import { UserButton } from './user-button';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { LogIn } from 'lucide-react';
+import { CartDrawer } from '../cart/cart-drawer';
 
 export const Nav = async () => {
   const session = await auth();
@@ -12,14 +13,17 @@ export const Nav = async () => {
   return (
     <header className='py-4'>
       <nav>
-        <ul className='flex justify-between items-center'>
-          <li>
+        <ul className='flex justify-between items-center md:gap-8 gap-4'>
+          <li className='flex flex-1 items-center'>
             <Link href='/' aria-label='Next Store'>
               <Logo />
             </Link>
           </li>
+          <li className='relative flex items-center hover:bg-muted'>
+            <CartDrawer />
+          </li>
           {!user && (
-            <li>
+            <li className='flex items-center'>
               <Button asChild>
                 <Link href='/auth/login'>
                   <LogIn size={16} />
@@ -29,7 +33,7 @@ export const Nav = async () => {
             </li>
           )}
           {user && (
-            <li>
+            <li className='flex items-center'>
               <UserButton user={user} />
             </li>
           )}

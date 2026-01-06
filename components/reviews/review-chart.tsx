@@ -3,7 +3,6 @@
 import { ReviewsWithUser } from '@/lib/infer-type';
 import { Card, CardDescription, CardTitle } from '../ui/card';
 import { getReviewAverage } from '@/lib/utils';
-import { useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
 
 interface ReviewChartProps {
@@ -11,17 +10,17 @@ interface ReviewChartProps {
 }
 
 export const ReviewChart = ({ reviews }: ReviewChartProps) => {
-  const getRatingByStars = useMemo(() => {
-    const ratingValues = Array.from({ length: 5 }, () => 0);
-    const totalReviews = reviews.length;
-    reviews.forEach((review) => {
-      const starIndex = review.rating - 1;
-      if (starIndex >= 0 && starIndex < 5) {
-        ratingValues[starIndex]++;
-      }
-    });
-    return ratingValues.map((rating) => (rating / totalReviews) * 100);
-  }, [reviews]);
+  const ratingValues = Array.from({ length: 5 }, () => 0);
+  const totalReviews = reviews.length;
+  reviews.forEach((review) => {
+    const starIndex = review.rating - 1;
+    if (starIndex >= 0 && starIndex < 5) {
+      ratingValues[starIndex]++;
+    }
+  });
+  const getRatingByStars = ratingValues.map((rating) =>
+    totalReviews > 0 ? (rating / totalReviews) * 100 : 0
+  );
 
   const totalRating = getReviewAverage(reviews.map((r) => r.rating));
   return (

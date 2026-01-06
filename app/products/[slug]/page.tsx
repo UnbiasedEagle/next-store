@@ -2,8 +2,9 @@ import { ProductPick } from '@/components/products/product-pick';
 import { ProductShowcase } from '@/components/products/product-showcase';
 import { ProductType } from '@/components/products/product-type';
 import { Reviews } from '@/components/reviews/reviews';
+import { Stars } from '@/components/reviews/stars';
 import { Separator } from '@/components/ui/separator';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getReviewAverage } from '@/lib/utils';
 import { db } from '@/server/db';
 import { productVariants } from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
@@ -40,6 +41,7 @@ const ProductPage = async ({ params }: ProductPageProps) => {
     with: {
       product: {
         with: {
+          reviews: true,
           productVariants: {
             with: { variantImages: true, variantTags: true },
           },
@@ -52,6 +54,10 @@ const ProductPage = async ({ params }: ProductPageProps) => {
     return notFound();
   }
 
+  const reviewAvg = getReviewAverage(
+    variant.product.reviews.map((review) => review.rating)
+  );
+
   return (
     <main>
       <section className='flex flex-col lg:flex-row gap-4 lg:gap-12'>
@@ -62,10 +68,10 @@ const ProductPage = async ({ params }: ProductPageProps) => {
           <h2 className='text-2xl font-bold'>{variant?.product.title}</h2>
           <div>
             <ProductType variants={variant.product.productVariants} />
-            {/* <Stars
-                rating={reviewAvg}
-                totalReviews={variant.product.reviews.length}
-              /> */}
+            <Stars
+              rating={reviewAvg}
+              totalReviews={variant.product.reviews.length}
+            />
           </div>
           <Separator className='my-2' />
           <p className='text-2xl font-medium py-2'>

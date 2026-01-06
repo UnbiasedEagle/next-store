@@ -22,7 +22,7 @@ export const Stars = ({ rating, totalReviews, size = 14 }: StarsProps) => {
       ))}
       {totalReviews ? (
         <span className='text-secondary-foreground font-bold text-sm ml-2'>
-          {totalReviews} reviews
+          {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
         </span>
       ) : null}
     </div>

@@ -34,10 +34,10 @@ export const UserButton = ({ user }: UserButtonProps) => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger>
-        <Avatar className='h-9 w-9'>
+        <Avatar className='h-7 w-7'>
           {user.image && <AvatarImage src={user.image} alt={user.name!} />}
           {!user.image && (
-            <AvatarFallback className='w-9 h-9 bg-linear-to-br from-primary/20 to-primary/40 text-primary font-semibold text-sm flex items-center justify-center shadow-sm'>
+            <AvatarFallback className='w-7 h-7 bg-linear-to-br from-primary/20 to-primary/40 text-primary font-semibold text-sm flex items-center justify-center shadow-sm'>
               {user.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           )}
