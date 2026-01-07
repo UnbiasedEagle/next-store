@@ -22,6 +22,9 @@ export interface CartState {
   ) => void;
   addToCart: (item: CartItem) => void;
   removeFromCart: (item: CartItem) => void;
+  cartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -29,6 +32,9 @@ export const useCartStore = create<CartState>()(
     devtools(
       (set) => ({
         cart: [],
+        cartOpen: false,
+        clearCart: () => set({ cart: [] }),
+        setCartOpen: (open: boolean) => set({ cartOpen: open }),
         checkoutProgress: 'cart-page',
         setCheckoutProgress: (
           progress: 'cart-page' | 'payment-page' | 'confirmation-page'

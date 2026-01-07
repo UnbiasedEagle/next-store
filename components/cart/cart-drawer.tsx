@@ -12,6 +12,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import CartItems from './cart-items';
 import { CartMessage } from './cart-message';
 import { CartProgress } from './cart-progress';
+import { Payment } from './payment';
+import { OrderConfirmed } from './order-confirmed';
 
 export const CartDrawer = () => {
   const { cart, checkoutProgress } = useCartStore();
@@ -42,6 +44,8 @@ export const CartDrawer = () => {
         <CartProgress />
         <div className='overflow-auto p-4'>
           {checkoutProgress === 'cart-page' && <CartItems />}
+          {checkoutProgress === 'payment-page' && <Payment />}
+          {checkoutProgress === 'confirmation-page' && <OrderConfirmed />}
         </div>
       </DrawerContent>
     </Drawer>
