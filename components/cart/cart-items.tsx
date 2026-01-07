@@ -19,7 +19,8 @@ import emptyCart from '@/public/empty-box.json';
 import { formatPrice } from '@/lib/utils';
 
 export default function CartItems() {
-  const { cart, addToCart, removeFromCart } = useCartStore();
+  const { cart, addToCart, removeFromCart, setCheckoutProgress } =
+    useCartStore();
 
   const totalPrice = useMemo(() => {
     return cart.reduce((acc, item) => {
@@ -136,7 +137,7 @@ export default function CartItems() {
       </motion.div>
       <Button
         onClick={() => {
-          // setCheckoutProgress('payment-page');
+          setCheckoutProgress('payment-page');
         }}
         className='max-w-md w-full'
         disabled={cart.length === 0}
