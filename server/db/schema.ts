@@ -28,6 +28,7 @@ export const users = pgTable('user', {
   image: text('image'),
   twoFactorEnabled: boolean('twoFactorEnabled').default(false),
   role: RoleEnum('roles').default('user'),
+  customerID: text('customerID'),
 });
 
 export const accounts = pgTable(
@@ -239,7 +240,7 @@ export const orderRelations = relations(orders, ({ one, many }) => ({
     references: [users.id],
     relationName: 'UserToOrders',
   }),
-  orderProducts: many(orderProducts, { relationName: 'OrderToProducts' }),
+  orderProducts: many(orderProducts, { relationName: 'OrderToOrderProducts' }),
 }));
 
 export const orderProducts = pgTable('order_products', {
@@ -260,16 +261,16 @@ export const orderProductRelations = relations(orderProducts, ({ one }) => ({
   order: one(orders, {
     fields: [orderProducts.orderId],
     references: [orders.id],
-    relationName: 'OrderToProducts',
+    relationName: 'OrderToOrderProducts',
   }),
   productVariant: one(productVariants, {
     fields: [orderProducts.productVariantId],
     references: [productVariants.id],
-    relationName: 'OrderToProducts',
+    relationName: 'OrderProductToVariant',
   }),
   product: one(products, {
     fields: [orderProducts.productId],
     references: [products.id],
-    relationName: 'OrderToProducts',
+    relationName: 'OrderProductToProduct',
   }),
 }));
