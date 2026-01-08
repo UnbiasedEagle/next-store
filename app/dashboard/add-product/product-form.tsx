@@ -39,6 +39,7 @@ export const ProductForm = () => {
     mode: 'onChange',
     resolver: zodResolver(ProductSchema),
   });
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');

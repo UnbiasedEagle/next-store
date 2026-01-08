@@ -8,9 +8,27 @@ import { LoginSchema } from '@/lib/validations/auth';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { accounts, users } from '@/server/db/schema';
+import Stripe from 'stripe';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
+  events: {
+    createUser: async ({ user }) => {
+      const stripe = new Stripe(process.env.STRIPE_SECRET!, {
+        apiVersion: '2025-12-15.clover',
+      });
+      const customer = await stripe.customers.create({
+        name: user.name as string,
+        email: user.email as string,
+      });
+      await db
+        .update(users)
+        .set({
+          customerID: customer.id,
+        })
+        .where(eq(users.id, user.id as string));
+    },
+  },
   providers: [
     Google,
     GitHub,

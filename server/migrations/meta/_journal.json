@@ -85,6 +85,13 @@
       "when": 1767761310621,
       "tag": "0011_nasty_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1767798080235,
+      "tag": "0012_sparkling_purple_man",
+      "breakpoints": true
     }
   ]
 }
