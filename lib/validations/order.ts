@@ -23,6 +23,7 @@ export const PaymentIntentSchema = z.object({
       title: z.string(),
       price: z.number(),
       image: z.string(),
+      variantID: z.number(),
     })
   ),
 });

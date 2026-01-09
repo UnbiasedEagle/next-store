@@ -8,6 +8,7 @@ import { auth } from '@/server/auth';
 import { db } from '@/server/db';
 import { orderProducts, orders } from '@/server/db/schema';
 import { createSafeActionClient } from 'next-safe-action';
+import { eq } from 'drizzle-orm';
 
 const actionClient = createSafeActionClient();
 
@@ -19,6 +20,15 @@ export const createOrder = actionClient
       if (!session?.user) {
         return { error: 'Unauthorized' };
       }
+
+      const existingOrder = await db.query.orders.findFirst({
+        where: eq(orders.paymentIntentID, parsedInput.paymentIntentID),
+      });
+
+      if (existingOrder) {
+        return { success: 'Order created successfully' };
+      }
+
       const order = await db
         .insert(orders)
         .values({

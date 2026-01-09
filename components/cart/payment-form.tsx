@@ -63,6 +63,7 @@ export const PaymentForm = ({ totalPrice }: PaymentFormProps) => {
         title: item.name,
         price: item.price,
         image: item.image,
+        variantID: item.variant.variantId,
       })),
     });
     if (paymentIntentData?.error) {

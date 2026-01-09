@@ -31,6 +31,7 @@ export const createPaymentIntent = actionClient
         },
         metadata: {
           cart: JSON.stringify(parsedInput.cart),
+          userId: session.user.id,
         },
       });
 
