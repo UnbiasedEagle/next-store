@@ -1,15 +1,15 @@
-import { AddCart } from '@/components/cart/add-cart';
-import { ProductPick } from '@/components/products/product-pick';
-import { ProductShowcase } from '@/components/products/product-showcase';
-import { ProductType } from '@/components/products/product-type';
-import { Reviews } from '@/components/reviews/reviews';
-import { Stars } from '@/components/reviews/stars';
-import { Separator } from '@/components/ui/separator';
-import { formatPrice, getReviewAverage } from '@/lib/utils';
-import { db } from '@/server/db';
-import { productVariants } from '@/server/db/schema';
-import { eq } from 'drizzle-orm';
-import { notFound } from 'next/navigation';
+import { AddCart } from "@/components/cart/add-cart";
+import { ProductPick } from "@/components/products/product-pick";
+import { ProductShowcase } from "@/components/products/product-showcase";
+import { ProductType } from "@/components/products/product-type";
+import { Reviews } from "@/components/reviews/reviews";
+import { Stars } from "@/components/reviews/stars";
+import { Separator } from "@/components/ui/separator";
+import { formatPrice, getReviewAverage } from "@/lib/utils";
+import { db } from "@/server/db";
+import { productVariants } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -56,17 +56,17 @@ const ProductPage = async ({ params }: ProductPageProps) => {
   }
 
   const reviewAvg = getReviewAverage(
-    variant.product.reviews.map((review) => review.rating)
+    variant.product.reviews.map((review) => review.rating),
   );
 
   return (
     <main>
-      <section className='flex flex-col lg:flex-row gap-4 lg:gap-12'>
-        <div className='flex-1'>
+      <section className="flex flex-col lg:flex-row gap-4 lg:gap-12">
+        <div className="flex-1">
           <ProductShowcase variants={variant.product.productVariants} />
         </div>
-        <div className='flex flex-col flex-1'>
-          <h2 className='text-2xl font-bold'>{variant?.product.title}</h2>
+        <div className="flex flex-col flex-1">
+          <h2 className="text-2xl font-bold">{variant?.product.title}</h2>
           <div>
             <ProductType variants={variant.product.productVariants} />
             <Stars
@@ -74,17 +74,17 @@ const ProductPage = async ({ params }: ProductPageProps) => {
               totalReviews={variant.product.reviews.length}
             />
           </div>
-          <Separator className='my-2' />
-          <p className='text-2xl font-medium py-2'>
+          <Separator className="my-2" />
+          <p className="text-2xl font-medium py-2">
             {formatPrice(variant.product.price)}
           </p>
           <div
             dangerouslySetInnerHTML={{ __html: variant.product.description }}
           ></div>
-          <p className='text-secondary-foreground font-medium my-2'>
+          <p className="text-secondary-foreground font-medium my-2">
             Available Colors
           </p>
-          <div className='flex gap-4 '>
+          <div className="flex gap-4 ">
             {variant.product.productVariants.map((prodVariant) => (
               <ProductPick
                 key={prodVariant.id}
