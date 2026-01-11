@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { db } from "@/server/db";
 import { Sales } from "./sales";
+import Earnings from "./earnings";
 
 const AnalyticsPage = async () => {
   const totalOrders = await db.query.orderProducts.findMany({
@@ -44,7 +45,7 @@ const AnalyticsPage = async () => {
       </CardHeader>
       <CardContent className="flex flex-col lg:flex-row gap-8 ">
         <Sales totalOrders={totalOrders} />
-        {/*<Earnings totalOrders={totalOrders} />*/}
+        <Earnings totalOrders={totalOrders} />
       </CardContent>
     </Card>
   );
