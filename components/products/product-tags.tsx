@@ -1,61 +1,67 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Badge } from "../ui/badge";
-import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from '@/lib/utils';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 
-export const ProductTags = () => {
+interface ProductTagsProps {
+  tags: string[];
+}
+
+export const ProductTags = ({ tags }: ProductTagsProps) => {
   const router = useRouter();
-  const params = useSearchParams();
-  const tag = params.get("tag");
+  const searchParams = useSearchParams();
+  const currentTag = searchParams.get('tag');
 
   const setFilter = (tag: string) => {
+    const params = new URLSearchParams(searchParams.toString());
     if (tag) {
-      router.push(`?tag=${tag}`);
+      params.set('tag', tag);
+    } else {
+      params.delete('tag');
     }
-    if (!tag) {
-      router.push("/");
-    }
+    const query = params.toString();
+    router.push(query ? `?${query}` : '/');
   };
 
+  const allTags = ['', ...tags];
+
   return (
-    <div className="my-4 flex gap-4 items-center justify-center">
-      <Badge
-        onClick={() => setFilter("")}
-        className={cn(
-          "cursor-pointer bg-black hover:bg-black/75 hover:opacity-100",
-          !tag ? "opacity-100" : "opacity-50",
-        )}
-      >
-        All
-      </Badge>
-      <Badge
-        onClick={() => setFilter("blue")}
-        className={cn(
-          "cursor-pointer bg-blue-500 hover:bg-blue-600 hover:opacity-100",
-          tag === "blue" && tag ? "opacity-100" : "opacity-50",
-        )}
-      >
-        Blue
-      </Badge>
-      <Badge
-        onClick={() => setFilter("green")}
-        className={cn(
-          "cursor-pointer bg-green-500 hover:bg-green-600 hover:opacity-100",
-          tag === "green" && tag ? "opacity-100" : "opacity-50",
-        )}
-      >
-        Green
-      </Badge>
-      <Badge
-        onClick={() => setFilter("purple")}
-        className={cn(
-          "cursor-pointer bg-purple-500 hover:bg-purple-600 hover:opacity-100",
-          tag === "purple" && tag ? "opacity-100" : "opacity-50",
-        )}
-      >
-        Purple
-      </Badge>
+    <div className='my-10 px-4'>
+      <div className='max-w-fit mx-auto overflow-x-auto no-scrollbar pb-2'>
+        <div className='flex items-center gap-2 p-1.5 bg-muted/30 backdrop-blur-sm rounded-full border border-border/50 shadow-sm'>
+          {allTags.map((tag) => {
+            const isActive = (!tag && !currentTag) || currentTag === tag;
+            const label = tag || 'All products';
+
+            return (
+              <button
+                key={tag || 'all'}
+                onClick={() => setFilter(tag)}
+                className={cn(
+                  'relative px-6 py-2 rounded-full text-sm font-medium transition-colors duration-300 whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                  isActive
+                    ? 'text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId='active-pill'
+                    className='absolute inset-0 bg-primary rounded-full shadow-lg shadow-primary/20 z-0'
+                    transition={{
+                      type: 'spring',
+                      stiffness: 450,
+                      damping: 35,
+                    }}
+                  />
+                )}
+                <span className='relative z-10 capitalize'>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
